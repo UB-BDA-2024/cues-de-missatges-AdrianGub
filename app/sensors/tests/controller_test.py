@@ -4,6 +4,9 @@ from app.main import app
 from shared.redis_client import RedisClient
 from shared.mongodb_client import MongoDBClient
 from shared.cassandra_client import CassandraClient
+from shared.elasticsearch_client import ElasticsearchClient
+from shared.timescale import Timescale
+import time
 
 client = TestClient(app)
 
@@ -20,11 +23,14 @@ def clear_dbs():
      mongo.clearDb("sensors")
      mongo.close()
 
-     cassandra = CassandraClient(["cassandra"])
-     cassandra.get_session().execute("DROP KEYSPACE IF EXISTS sensor")
-     cassandra.close()
-
-     
-
-
-#TODO ADD all your tests in test_*.py files:
+     #cassandra = CassandraClient(["cassandra"])
+     #cassandra.get_session().execute("DROP KEYSPACE IF EXISTS sensor")
+     #cassandra.close()
+     while True:
+        try:
+            cassandra = CassandraClient(["cassandra"])
+            #cassandra.get_session().execute("DROP KEYSPACE sensor")
+            cassandra.close()
+            break
+        except Exception as e:
+            time.sleep(5)

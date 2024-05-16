@@ -1,0 +1,1 @@
+SELECT create_hypertable('sensor_data', 'last_seen');
