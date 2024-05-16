@@ -1,4 +1,5 @@
 from elasticsearch import Elasticsearch
+import time
 
 class ElasticsearchClient:
     def __init__(self, host="localhost", port="9200"):
@@ -6,6 +7,10 @@ class ElasticsearchClient:
         self.port = port
         self.client = Elasticsearch(["http://"+self.host+":"+self.port])
 
+        while not self.ping():
+            print("Waiting for Elasticsearch to start...")
+            time.sleep(1)
+            
     def ping(self):
         return self.client.ping()
     
@@ -21,7 +26,10 @@ class ElasticsearchClient:
         self.client.close()
 
     def create_index(self, index_name):
-        return self.client.indices.create(index=index_name)
+        if self.client.indices.exists(index=index_name):
+            return None
+        else:
+            return self.client.indices.create(index=index_name)
     
     def create_mapping(self, index_name, mapping):
         return self.client.indices.put_mapping(index=index_name, body=mapping)
